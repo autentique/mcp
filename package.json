@@ -1,0 +1,16 @@
+{
+  "name": "@autentique/mcp",
+  "version": "0.1.0",
+  "description": "Autentique MCP stdio client with OAuth support",
+  "type": "module",
+  "bin": {
+    "autentique-mcp": "src/index.js"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "files": ["src", "test", "README.md", "LICENSE"],
+  "scripts": {"test": "node --test"},
+  "publishConfig": {"access": "public"},
+  "license": "MIT"
+}
