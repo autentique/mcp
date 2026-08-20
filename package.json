@@ -9,8 +9,31 @@
   "engines": {
     "node": ">=20"
   },
-  "files": ["src", "test", "README.md", "LICENSE"],
-  "scripts": {"test": "node --test"},
-  "publishConfig": {"access": "public"},
-  "license": "MIT"
+  "files": [
+    "src",
+    "test",
+    "README.md",
+    "LICENSE"
+  ],
+  "scripts": {
+    "test": "node --test"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/autentique/mcp.git"
+  },
+  "homepage": "https://github.com/autentique/mcp#readme",
+  "bugs": {
+    "url": "https://github.com/autentique/mcp/issues"
+  },
+  "keywords": [
+    "autentique",
+    "mcp",
+    "model-context-protocol",
+    "oauth"
+  ]
 }
