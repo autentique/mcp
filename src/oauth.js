@@ -1,10 +1,25 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';
 import { spawn } from 'node:child_process';
+import { readFile } from 'node:fs/promises';
+import { dirname, join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { readToken, removeToken, writeToken } from './storage.js';
 
 const CALLBACK_PATH = '/oauth/callback';
 const AUTH_TIMEOUT_MS = 5 * 60 * 1000;
+const sourceDirectory = dirname(fileURLToPath(import.meta.url));
+const successPagePath = join(sourceDirectory, 'oauth-success.html');
+const logoPath = join(sourceDirectory, 'autentique-logo.svg');
+let successPagePromise;
+
+export function successPage() {
+  successPagePromise ??= Promise.all([
+    readFile(successPagePath, 'utf8'),
+    readFile(logoPath, 'utf8'),
+  ]).then(([template, logo]) => template.replaceAll('{{AUTENTIQUE_LOGO}}', logo));
+  return successPagePromise;
+}
 
 export function parseResourceMetadataUrl(header) {
   return header?.match(/resource_metadata="([^"]+)"/i)?.[1] || null;
@@ -61,7 +76,7 @@ class CallbackServer {
   }
 
   async start() {
-    this.server.on('request', (request, response) => {
+    this.server.on('request', async (request, response) => {
       const url = new URL(request.url, 'http://127.0.0.1');
       if (url.pathname !== CALLBACK_PATH) {
         response.writeHead(404).end('Not found');
@@ -90,9 +105,12 @@ class CallbackServer {
         reject(new Error('OAuth callback did not contain an authorization code.'));
         return;
       }
-      response.writeHead(200, { 'content-type': 'text/html; charset=utf-8' }).end(
-        '<!doctype html><title>Autentique connected</title><p>Autentique connected. You can close this window.</p>',
-      );
+      response.writeHead(200, {
+        'cache-control': 'no-store',
+        'content-security-policy': "default-src 'none'; style-src 'unsafe-inline'",
+        'content-type': 'text/html; charset=utf-8',
+        'referrer-policy': 'no-referrer',
+      }).end(await successPage());
       resolve(code);
     });
     await new Promise((resolve, reject) => {
@@ -177,7 +195,7 @@ export class OAuthClient {
           method: 'POST',
           headers: { accept: 'application/json', 'content-type': 'application/json' },
           body: JSON.stringify({
-            client_name: process.env.AUTENTIQUE_MCP_CLIENT_NAME || 'Autentique MCP Client',
+            client_name: process.env.AUTENTIQUE_MCP_CLIENT_NAME || 'Autentique MCP Connector',
             redirect_uris: [redirectUri],
             grant_types: ['authorization_code', 'refresh_token'],
             response_types: ['code'],

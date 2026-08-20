@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>Autentique conectado</title>
+  <style>
+    :root {
+      color-scheme: light;
+      font-family: Lato, "Lato Fallback", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --blue: #0461ff;
+      --ink: #14112d;
+      --muted: #4e536d;
+      --line: #dfe3eb;
+      --surface: #f5f6fa;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      color: var(--ink);
+      background: var(--surface);
+    }
+
+    .card {
+      width: min(calc(100% - 32px), 418px);
+      margin: 36px auto;
+      padding: 24px 20px 20px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+    }
+
+    .heading {
+      margin: 0;
+      color: var(--ink);
+      font-size: 21px;
+      font-weight: 800;
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    .heading span { color: var(--blue); }
+
+    .brand {
+      display: flex;
+      justify-content: center;
+      margin: 22px 0 18px;
+    }
+
+    .brand svg { display: block; width: 44px; height: 43px; }
+
+    .message {
+      margin: 0;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.45;
+      text-align: center;
+    }
+
+    .confirmation {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 22px 0 0;
+      padding: 12px;
+      color: #17683f;
+      background: #effaf4;
+      border: 1px solid #cceedd;
+      border-radius: 5px;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    .check {
+      display: grid;
+      flex: 0 0 22px;
+      width: 22px;
+      height: 22px;
+      place-items: center;
+      color: #fff;
+      background: #1e9b60;
+      border-radius: 50%;
+    }
+
+    .check svg { width: 14px; height: 14px; }
+
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 24px;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      flex: 1;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 16px;
+      border: 0;
+      border-radius: 6px;
+      font-size: 15px;
+      font-weight: 700;
+      text-decoration: none;
+    }
+
+    .button-secondary {
+      color: #596078;
+      background: var(--surface);
+    }
+
+    .button-primary {
+      color: #fff;
+      background: var(--blue);
+    }
+
+    .button-primary:hover { background: #1253c6; }
+    .button-secondary:hover { background: #e9ebf2; }
+
+    .note {
+      margin: 18px 0 0;
+      color: #747a90;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    @media (max-width: 460px) {
+      .card { margin-top: 16px; }
+      .actions { flex-direction: column-reverse; }
+    }
+  </style>
+</head>
+<body>
+  <main class="card" aria-labelledby="success-title">
+    <h1 class="heading" id="success-title"><span>Autentique MCP Connector</span><br>está conectado</h1>
+    <div class="brand" aria-hidden="true">{{AUTENTIQUE_LOGO}}</div>
+    <p class="message">Sua conta foi autorizada com sucesso. Você já pode voltar ao seu aplicativo MCP e usar o Autentique.</p>
+    <!-- <div class="confirmation"> -->
+    <!--   <span class="check" aria-hidden="true"> -->
+    <!--     <svg viewBox="0 0 24 24" fill="none"> -->
+    <!--       <path d="m5 12.5 4.2 4.2L19 7" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/> -->
+    <!--     </svg> -->
+    <!--   </span> -->
+    <!--   Autorização concluída -->
+    <!-- </div> -->
+    <!-- <div class="actions"> -->
+    <!--   <a class="button button-secondary" href="https://autentique.com.br">Voltar ao Autentique</a> -->
+    <!--   <a class="button button-primary" href="https://painel.autentique.com.br/perfil/api">Aplicativos conectados</a> -->
+    <!-- </div> -->
+    <p class="note">Você pode fechar esta janela.</p>
+  </main>
+</body>
+</html>
