@@ -18,10 +18,11 @@ jobs:
 
       - uses: actions/setup-node@v6
         with:
-          node-version: "22.14.x"
-          registry-url: "https://registry.npmjs.org"
+          node-version: "24.x"
           package-manager-cache: false
 
+      - run: node --version
+      - run: npm --version
       - run: npm ci
       - run: npm test
       - run: npm publish
