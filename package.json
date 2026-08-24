@@ -1,6 +1,6 @@
 {
   "name": "@autentique/mcp",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Autentique MCP stdio client with OAuth support",
   "type": "module",
   "bin": {
@@ -35,5 +35,8 @@
     "mcp",
     "model-context-protocol",
     "oauth"
-  ]
+  ],
+  "dependencies": {
+    "open": "^11.0.1"
+  }
 }
