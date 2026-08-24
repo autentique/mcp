@@ -35,5 +35,8 @@
     "mcp",
     "model-context-protocol",
     "oauth"
-  ]
+  ],
+  "dependencies": {
+    "open": "^11.0.1"
+  }
 }

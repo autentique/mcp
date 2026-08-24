@@ -1,6 +1,13 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { createPkce, parseResourceMetadataUrl, successPage, wellKnownUrl } from '../src/oauth.js';
+import {
+  CallbackServer,
+  createPkce,
+  openBrowser,
+  parseResourceMetadataUrl,
+  successPage,
+  wellKnownUrl,
+} from '../src/oauth.js';
 
 test('parses the protected resource metadata URL', () => {
   assert.equal(
@@ -21,6 +28,36 @@ test('creates a PKCE pair', () => {
   const { verifier, challenge } = createPkce();
   assert.ok(verifier.length >= 43);
   assert.match(challenge, /^[A-Za-z0-9_-]+$/);
+});
+
+test('opens complete OAuth URLs through the platform opener', async () => {
+  const authorizationUrl = 'https://api.example/oauth/authorize?client_id=client&redirect_uri=http%3A%2F%2F127.0.0.1%3A1234%2Foauth%2Fcallback&response_type=code&state=state&code_challenge=challenge';
+  let openedTarget;
+  let completeOpening;
+
+  const opening = openBrowser(authorizationUrl, (target) => {
+    openedTarget = target;
+    return new Promise((resolve) => {
+      completeOpening = resolve;
+    });
+  });
+
+  assert.equal(openedTarget, authorizationUrl);
+  assert.ok(opening instanceof Promise);
+  completeOpening();
+  await opening;
+});
+
+test('closes pending OAuth callback waits', async () => {
+  const callback = new CallbackServer();
+  const rejection = assert.rejects(
+    callback.waitForCode('state'),
+    /OAuth callback server closed/,
+  );
+
+  callback.close();
+
+  await rejection;
 });
 
 test('renders a branded success page without external assets', async () => {

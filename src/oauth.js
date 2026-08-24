@@ -1,9 +1,9 @@
 import { createHash, randomBytes, randomUUID } from 'node:crypto';
 import { createServer } from 'node:http';
-import { spawn } from 'node:child_process';
 import { readFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
+import open from 'open';
 import { readToken, removeToken, writeToken } from './storage.js';
 
 const CALLBACK_PATH = '/oauth/callback';
@@ -44,14 +44,8 @@ function log(message) {
   process.stderr.write(`[autentique-mcp] ${message}\n`);
 }
 
-function openBrowser(url) {
-  const [command, args] = process.platform === 'darwin'
-    ? ['open', [url]]
-    : process.platform === 'win32'
-      ? ['cmd', ['/c', 'start', '', url]]
-      : ['xdg-open', [url]];
-  const child = spawn(command, args, { detached: true, stdio: 'ignore' });
-  child.unref();
+export function openBrowser(url, opener = open) {
+  return opener(url);
 }
 
 async function jsonResponse(response, context) {
@@ -69,7 +63,7 @@ async function jsonResponse(response, context) {
   return payload;
 }
 
-class CallbackServer {
+export class CallbackServer {
   constructor() {
     this.server = createServer();
     this.pending = null;
@@ -136,6 +130,11 @@ class CallbackServer {
   }
 
   close() {
+    if (this.pending) {
+      const { reject } = this.pending;
+      this.pending = null;
+      reject(new Error('OAuth callback server closed.'));
+    }
     this.server.close();
   }
 }
@@ -189,6 +188,7 @@ export class OAuthClient {
     const redirectUri = await callback.start();
     const state = randomUUID();
     const { verifier, challenge } = createPkce();
+    let codePromise;
     try {
       const registration = await jsonResponse(
         await this.fetch(authorizationMetadata.registration_endpoint, {
@@ -219,8 +219,8 @@ export class OAuthClient {
         code_challenge_method: 'S256',
       }).toString();
       log('opening the Autentique authorization page in your browser');
-      const codePromise = callback.waitForCode(state);
-      openBrowser(authorizationUrl.toString());
+      codePromise = callback.waitForCode(state);
+      await openBrowser(authorizationUrl.toString());
       const code = await codePromise;
       const token = await jsonResponse(
         await this.fetch(authorizationMetadata.token_endpoint, {
@@ -247,6 +247,7 @@ export class OAuthClient {
       return token.access_token;
     } finally {
       callback.close();
+      await codePromise?.catch(() => {});
     }
   }
 
